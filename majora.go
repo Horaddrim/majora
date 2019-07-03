@@ -3,8 +3,6 @@ package majora
 import (
 	luaJSON "layeh.com/gopher-json"
 	"github.com/yuin/gopher-lua"
-
-	"fmt"
 )
 
 func loadVM() (vm *lua.LState) {
