@@ -5,7 +5,7 @@ import (
 	"github.com/yuin/gopher-lua"
 )
 
-func loadVM() (vm *lua.LState) {
+func loadVM(datapath string) (vm *lua.LState) {
 	vm = lua.NewState()
 
 	vm.PreloadModule("json", luaJSON.Loader)
@@ -34,6 +34,7 @@ func loadVM() (vm *lua.LState) {
 	loadedIndex := vm.GetField(vm.GetField(vm.Get(lua.EnvironIndex), "package"), "preload")
 
 	vm.SetField(loadedIndex, "fs", mod)
+	vm.SetGlobal("datapath", lua.LString(datapath))
 	return
 }
 
@@ -41,8 +42,8 @@ func loadVM() (vm *lua.LState) {
 // using a predefined environment and VM.
 // WARNING: This function does not handle errors.
 // @TODO: Handle custom errors.
-func RunScript(script string) (parserJSON []byte) {
-	vm := loadVM()
+func RunScript(script, datapath string) (parserJSON []byte) {
+	vm := loadVM(datapath)
 	defer vm.Close()
 
 	if err := vm.DoString(script); err != nil {
@@ -57,8 +58,8 @@ func RunScript(script string) (parserJSON []byte) {
 // using the same context as the RunScript function.
 // WARNING: This function does not handle errors.
 // @TODO: Handle custom errors.
-func RunFile(filename string) (parserJSON []byte) {
-	vm := loadVM()
+func RunFile(filename, datapath string) (parserJSON []byte) {
+	vm := loadVM(datapath)
 	defer vm.Close()
 
 	if err := vm.DoFile(filename); err != nil {
