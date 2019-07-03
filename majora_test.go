@@ -7,7 +7,7 @@ func TestRunScript(t *testing.T) {
 		local json = require("json")
 		local fs = require("fs")
 
-		local content = fs.read_file("test/data/mobsf_apk_scan.json")
+		local content = fs.read_file(datapath)
 
 		local json_parsed = json.decode(content)
 
@@ -28,9 +28,17 @@ func TestRunScript(t *testing.T) {
 		return json.encode(json_parsed)
 	`
 
-	result := RunScript(script)
+	result := RunScript(script, "test/data/mobsf_apk_scan.json")
 
 	if result == nil {
-		t.Errorf("RunScript should not return nil")
+		t.Errorf("RunScript should not return nil.")
+	}
+}
+
+func TestRunFile(t *testing.T) {
+	result := RunFile("test/mobsf.lua", "test/data/mobsf_apk_scan.json")
+
+	if result == nil {
+		t.Errorf("RunFile should not return nil.")
 	}
 }
