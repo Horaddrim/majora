@@ -45,18 +45,6 @@ func TestSimple(t *testing.T) {
 	assert(json.decode("null") == nil)
 	assert(json.decode(json.encode({person={name = "tim"}})).person.name == "tim")
 
---	local obj = {
---		abc = 123,
---		def = nil,
---	}
-
---	obj2 = {
---		obj = obj,
---	}
-
---	obj.obj2 = obj2
---	assert(json.encode(obj) == nil)
-
 	local a = {}
 	for i=1, 5 do
 		a[i] = i
