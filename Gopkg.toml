@@ -24,6 +24,10 @@
 #   go-tests = true
 #   unused-packages = true
 
+[[constraint]]
+	name = "github.com/yuin/gopher-lua"
+	branch = "master"
+
 
 [prune]
   go-tests = true
