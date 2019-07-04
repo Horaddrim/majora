@@ -2,7 +2,7 @@ package majora
 
 import "testing"
 
-func TestRunScript(t *testing.T) {
+func TestExecScript(t *testing.T) {
 	script := `
 		local json = require("json")
 		local fs = require("fs")
@@ -28,17 +28,25 @@ func TestRunScript(t *testing.T) {
 		return json.encode(json_parsed)
 	`
 
-	result := RunScript(script, "test/data/mobsf_apk_scan.json")
+	globalVariables := make(map[string]string)
+
+	globalVariables["datapath"] = "test/data/mobsf_apk_scan.json"
+
+	result := ExecScript(globalVariables, script)
 
 	if result == nil {
-		t.Errorf("RunScript should not return nil.")
+		t.Errorf("ExecScript should not return nil.")
 	}
 }
 
-func TestRunFile(t *testing.T) {
-	result := RunFile("test/mobsf.lua", "test/data/mobsf_apk_scan.json")
+func TestExecFile(t *testing.T) {
+	globalVariables := make(map[string]string)
+
+	globalVariables["datapath"] = "test/data/mobsf_apk_scan.json"
+
+	result := ExecFile(globalVariables, "test/mobsf.lua")
 
 	if result == nil {
-		t.Errorf("RunFile should not return nil.")
+		t.Errorf("ExecFile should not return nil.")
 	}
 }

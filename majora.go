@@ -1,14 +1,11 @@
 package majora
 
-import (
-	luaJSON "layeh.com/gopher-json"
-	"github.com/yuin/gopher-lua"
-)
+import "github.com/yuin/gopher-lua"
 
-func loadVM(datapath string) (vm *lua.LState) {
+func loadVM(extraInfo map[string]string) (vm *lua.LState) {
 	vm = lua.NewState()
 
-	vm.PreloadModule("json", luaJSON.Loader)
+	vm.PreloadModule("json", JSONLoader)
 
 	fileModule := `
 		local fs = {}
@@ -34,16 +31,20 @@ func loadVM(datapath string) (vm *lua.LState) {
 	loadedIndex := vm.GetField(vm.GetField(vm.Get(lua.EnvironIndex), "package"), "preload")
 
 	vm.SetField(loadedIndex, "fs", mod)
-	vm.SetGlobal("datapath", lua.LString(datapath))
+
+	for globalVariableName, globalVariableValue := range extraInfo {
+		vm.SetGlobal(globalVariableName, lua.LString(globalVariableValue))
+	}
+
 	return
 }
 
-// RunScript function runs the given Lua script string
+// ExecScript function runs the given Lua script string
 // using a predefined environment and VM.
 // WARNING: This function does not handle errors.
 // @TODO: Handle custom errors.
-func RunScript(script, datapath string) (parserJSON []byte) {
-	vm := loadVM(datapath)
+func ExecScript(extraVariables map[string]string, script string) (parserJSON []byte) {
+	vm := loadVM(extraVariables)
 	defer vm.Close()
 
 	if err := vm.DoString(script); err != nil {
@@ -54,12 +55,12 @@ func RunScript(script, datapath string) (parserJSON []byte) {
 	return
 }
 
-// RunFile runs a given Lua script file
-// using the same context as the RunScript function.
+// ExecFile runs a given Lua script file
+// using the same context as the ExecScript function.
 // WARNING: This function does not handle errors.
 // @TODO: Handle custom errors.
-func RunFile(filename, datapath string) (parserJSON []byte) {
-	vm := loadVM(datapath)
+func ExecFile(extraVariables map[string]string, filename string) (parserJSON []byte) {
+	vm := loadVM(extraVariables)
 	defer vm.Close()
 
 	if err := vm.DoFile(filename); err != nil {
